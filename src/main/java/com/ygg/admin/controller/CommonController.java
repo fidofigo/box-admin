@@ -34,12 +34,6 @@ public class CommonController
     @Resource
     private UserService userService;
 
-    // @Reference
-    // private UserApi userApi;
-
-//    @Resource(name="redisAdmin")
-//    private CacheClientIF cacheClient;
-
     private static Logger logger = Logger.getLogger(CommonController.class);
 
     /**
@@ -135,31 +129,7 @@ public class CommonController
     @PermissionDesc("首页")
     public ModelAndView index()
     {
-//        List<PlatformTypeDomain> domains = cacheClient.get(CommonConstant.CACHE_KEY_PLATFORM_TYPES);
-//        if (domains == null)
-//        {
-//            try
-//            {
-//                PlainResult<List<PlatformTypeDomain>> plainResult = userApi.getAllPlatformTypeList();
-//                if (plainResult.isOk())
-//                {
-//                    domains = plainResult.getData();
-//                    cacheClient.put(CommonConstant.CACHE_KEY_PLATFORM_TYPES, domains, CacheConstant.CACHE_TIME_MINUTE_1 * 10);
-//                }
-//            }
-//            catch (Exception e)
-//            {
-//                logger.error(e.getMessage(), e);
-//            }
-//        }
-//        if (domains == null)
-//        {
-//            domains = new ArrayList<>();
-//        }
-        ModelAndView mv = new ModelAndView("user/index");
-//        mv.addObject("domains", domains);
-        
-        return mv;
+        return new ModelAndView("user/index");
     }
 
     @RequestMapping(value = "updateOwnPWD", produces = "application/json;charset=UTF-8")
