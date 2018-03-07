@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="AdminMapper">
+
+    <!-- 插入权限信息 -->
+    <insert id="insertPermission" parameterType="map">
+        INSERT INTO realm_permission(permission,description,category)
+        VALUES(#{permission},#{description},#{category})
+    </insert>
+
+    <!-- 批量插入权限信息 -->
+    <insert id="batchInsertPermission" parameterType="list">
+        INSERT INTO realm_permission(permission,description,category,platform_type_id) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.permission},#{item.description},#{item.category},#{item.platformTypeId})
+        </foreach>
+    </insert>
+
+    <!-- 查询权限信息 -->
+    <select id="findPermissionByPara" parameterType="map" resultType="map">
+        SELECT
+          id,
+          permission,
+          category,
+          description
+        FROM
+          `realm_permission`
+        WHERE
+          is_available=1
+            <if test="permission != null"> AND permission=#{permission}</if>
+            <if test="description != null"> AND description=#{description}</if>
+    </select>
+
+    <!-- 插入角色信息 -->
+    <insert id="insertRole" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO realm_role(role,description,department_id)
+        VALUES(#{role},#{description}, #{departmentId})
+    </insert>
+
+    <!-- 更新角色信息 -->
+    <update id="updateRole" parameterType="map">
+        UPDATE `realm_role` set role=#{role},description=#{description}, department_id =#{departmentId} where id=#{id}
+    </update>
+
+    <!-- 批量插入角色权限关系表 -->
+    <insert id="insertRelationRolePermission" parameterType="list">
+        INSERT INTO relation_role_permission(`realm_role_id`,`realm_permission_id`) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.realmRoleId},#{item.realmPermissionId})
+        </foreach>
+    </insert>
+
+    <!-- 根据角色ID删除角色权限关系表 -->
+    <insert id="deleteRelationRolePermissionByRoleId" parameterType="int">
+        delete from relation_role_permission where realm_role_id=#{realmRoleId}
+    </insert>
+
+    <!-- 批量插入用户权限关系表 -->
+    <insert id="insertRelationUserPermission" parameterType="list">
+        INSERT INTO relation_user_permission(`user_id`,`realm_permission_id`) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.userId},#{item.realmPermissionId})
+        </foreach>
+    </insert>
+
+    <!-- 根据用户ID删除用户权限关系表 -->
+    <insert id="deleteRelationUserPermissionByUserId" parameterType="int">
+        delete from relation_user_permission where user_id=#{userId}
+    </insert>
+
+    <!-- 根据角色ID查询权限ID -->
+    <select id="findPermissionIdByRoleId" parameterType="int" resultType="int">
+        select realm_permission_id as permissionId from relation_role_permission where realm_role_id=#{realmRoleId}
+    </select>
+
+    <!-- 查询角色信息 -->
+    <select id="findRoleByPara" parameterType="map" resultType="map">
+        SELECT
+          id,
+          role,
+          description,
+          is_available as isAvailable,
+          department_id as departmentId
+        FROM
+          `realm_role`
+        WHERE
+          is_available=1
+          <if test="role != null"> AND role=#{role}</if>
+          <if test="id != null"> AND id=#{id}</if>
+    </select>
+
+    <!-- 查询管理员信息 -->
+    <select id="findUserByPara" parameterType="map" resultType="User">
+        SELECT
+        id,username,realname,`password`, email ,locked, mobile_number AS mobileNumber,sms_code AS smsCode, department_id as departmentId  FROM `user`
+        WHERE
+        1=1
+        <if test="username != null"> AND username=#{username}</if>
+        <if test="realname != null"> AND realname=#{realname}</if>
+        <if test="departmentId != null"> AND department_id=#{departmentId}</if>
+        <if test="locked != null"> AND locked=#{locked}</if>
+        <if test="id != null"> AND id=#{id}</if>
+        <if test="mobileNumber != null"> AND mobile_number=#{mobileNumber}</if>
+        <if test="smsCode != null"> AND sms_code=#{smsCode}</if>
+        <if test="roleId != null">
+            AND id in (
+            select distinct user_id from relation_user_role where realm_role_id = #{roleId}
+            )
+        </if>
+        <if test="start != null"> LIMIT #{start},#{max}</if>
+    </select>
+
+    <!-- count管理员信息 -->
+    <select id="countUserByPara" parameterType="map" resultType="int">
+        SELECT count(u.id) FROM `user` u
+        WHERE
+        1=1
+        <if test="username != null"> AND username=#{username}</if>
+        <if test="realname != null"> AND realname=#{realname}</if>
+        <if test="departmentId != null"> AND department_id=#{departmentId}</if>
+        <if test="locked != null"> AND locked=#{locked}</if>
+        <if test="id != null"> AND id=#{id}</if>
+        <if test="mobileNumber != null"> AND mobile_number=#{mobileNumber}</if>
+        <if test="smsCode != null"> AND sms_code=#{smsCode}</if>
+        <if test="roleId != null">
+            AND id in (
+            select distinct user_id from relation_user_role where realm_role_id = #{roleId}
+            )
+        </if>
+    </select>
+
+    <!-- 根据username 查询用户拥有的角色 -->
+    <select id="findRolesByUsername" parameterType="string" resultType="string">
+        SELECT
+          r.role
+        FROM
+          `user` u,relation_user_role ur,realm_role r
+        WHERE
+          ur.user_id=u.id
+          AND ur.realm_role_id=r.id
+          AND u.username=#{username}
+    </select>
+
+    <!-- 根据userId查询用户角色Id -->
+    <select id="findAllRoleIdByUserId" parameterType="int" resultType="int">
+        SELECT realm_role_id FROM relation_user_role WHERE user_id=#{id}
+    </select>
+
+    <!-- 插入管理员信息 -->
+    <insert id="createUser" parameterType="User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user(username,realname,mobile_number,password,locked, department_id,email)
+        VALUES(#{username},#{realname},#{mobileNumber},#{password},#{locked}, #{departmentId},#{email})
+    </insert>
+
+    <!-- 更新管理员 -->
+    <update id="updateUser" parameterType="map">
+        UPDATE user
+        <set>
+            <if test="password != null"> password=#{password}, </if>
+            <if test="username != null"> username=#{username}, </if>
+            <if test="realname != null"> realname=#{realname}, </if>
+            <if test="departmentId != null"> department_id=#{departmentId}, </if>
+            <if test="locked != null"> locked=#{locked},</if>
+            <if test="email != null"> email=#{email},</if>
+            <if test="mobileNumber != null"> mobile_number=#{mobileNumber},</if>
+            <if test="smsCode != null"> sms_code=#{smsCode}</if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <!-- 插入用户角色关系 -->
+    <insert id="insertUserRole" parameterType="map">
+        INSERT INTO relation_user_role(user_id,realm_role_id)
+        VALUES(#{userId},#{roleId})
+    </insert>
+
+    <!-- 根据userId删除角色 -->
+    <delete id="deleteAllRoleByUserId" parameterType="int">
+        DELETE FROM relation_user_role WHERE user_id=#{id}
+    </delete>
+
+    <!-- 根据username 查询用户拥有的权限 -->
+    <select id="findPermissionByUsername" parameterType="string" resultType="string">
+        SELECT
+			p.permission
+		FROM
+			realm_permission p,
+			relation_role_permission rp,
+			realm_role r
+		WHERE
+			rp.realm_permission_id=p.id
+			AND rp.realm_role_id=r.id
+			AND r.id in
+				(SELECT r.id FROM `user` u,relation_user_role ur,realm_role r WHERE  ur.user_id=u.id AND ur.realm_role_id=r.id AND u.username=#{username})
+			and p.platform_type_id=0
+    </select>
+
+    <!-- 根据role id 查询permission id -->
+    <select id="findPermissionByRoleId" parameterType="int" resultType="int">
+        SELECT
+        rp.realm_permission_id as pid
+        FROM
+        realm_permission p,
+        relation_role_permission rp,
+        realm_role r
+        WHERE
+        rp.realm_permission_id=p.id
+        AND rp.realm_role_id=r.id
+        AND rp.realm_role_id = #{roleId}
+    </select>
+
+	<update id="updatePermissionDesc" parameterType="list">
+		<foreach collection="list" item="item" index="index" separator=";">
+            update realm_permission set description=#{item.description} where category=#{item.category} and permission=#{item.permission}
+        </foreach>
+	</update>
+
+
+    <!-- 根据username 查询所有版本信息 -->
+    <select id="findAllVersion" parameterType="map" resultType="map">
+        select id,channelName,version,update_time as updateTime,is_available as available from app_version limit #{start},#{max}
+    </select>
+
+    <!-- 根据username 查询所有版本信息 -->
+    <select id="findVersionById" parameterType="int" resultType="map">
+        select id,channelName,version,url,remark from app_version where id = #{id}
+    </select>
+
+    <update id="updateVersion" parameterType="map">
+        UPDATE app_version
+        <set>
+            <if test="url != null"> url=#{url}, </if>
+            <if test="version != null"> version=#{version}, </if>
+            remark=#{remark},
+        </set>
+        where id=#{id}
+    </update>
+    <update id="updateVersionAvailable" parameterType="map">
+        UPDATE app_version set is_available=#{available} where id=#{id}
+    </update>
+
+    <select id="findVersionCount" parameterType="int" resultType="int">
+        select count(*) from app_version
+    </select>
+
+    <update id="updatePermissionByPara" parameterType="map">
+        update realm_permission set description=#{description} where  permission=#{permission}
+    </update>
+
+
+</mapper>

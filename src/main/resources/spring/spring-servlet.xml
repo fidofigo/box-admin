@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+				         http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+				         http://www.springframework.org/schema/context
+				         http://www.springframework.org/schema/context/spring-context-4.0.xsd
+				         http://www.springframework.org/schema/mvc
+				         http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+				         http://www.springframework.org/schema/aop
+				         http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+				         http://code.alibabatech.com/schema/dubbo
+				         http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+    <!--扫描dubbo注解，必须在扫描controller之前执行-->
+    <dubbo:annotation/>
+
+    <context:property-placeholder location="classpath*:config/config.properties"/>
+
+    <context:component-scan base-package="com.ygg.admin.controller"/>
+
+    <bean id="appAspect" class="com.ygg.admin.aspect.ModelAndViewAspect"/>
+
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>text/html;charset=UTF-8</value>
+                        <value>application/json;charset=UTF-8</value>
+                    </list>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <mvc:interceptors>
+        <bean class="com.ygg.admin.interceptor.PermissionInterceptor"/>
+        <!-- 拦截外网用户 -->
+        <bean class="com.ygg.admin.interceptor.LoginInterceptor"/>
+        <!-- 记住用户菜单选择 & 拦截IE浏览器 -->
+        <bean class="com.ygg.admin.interceptor.MenuInterceptor"/>
+
+    </mvc:interceptors>
+
+
+    <!-- freemarker的配置 -->
+    <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="templateLoaderPath" value="/pages/"/>
+        <property name="freemarkerSettings">
+            <props>
+                <prop key="template_update_delay">5</prop>
+                <prop key="defaultEncoding">UTF-8</prop>
+                <prop key="url_escaping_charset">UTF-8</prop>
+                <prop key="locale">zh_CN</prop>
+                <prop key="boolean_format">true,false</prop>
+                <prop key="datetime_format">yyyy-MM-dd HH:mm:ss</prop>
+                <prop key="time_format">HH:mm:ss</prop>
+                <prop key="number_format">#.##</prop>
+                <prop key="whitespace_stripping">true</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- FreeMarker视图解析 如返回userinfo。。在这里配置后缀名ftl和视图解析器。。 -->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView"/>
+        <property name="suffix" value=".ftl"/>
+        <property name="contentType" value="text/html;charset=UTF-8"/>
+        <property name="allowRequestOverride" value="true"/>  <!-- 在request范围内充许重复绑定 -->
+        <property name="allowSessionOverride" value="true"/>  <!-- 在session范围内充许重复绑定 -->
+        <property name="exposeRequestAttributes" value="true"/>
+        <property name="exposeSessionAttributes" value="true"/>
+        <property name="exposeSpringMacroHelpers" value="true"/>
+        <property name="requestContextAttribute" value="rc"/> <!-- 设置contextpath 在 FTL 页面中用　${rc.contextPath}得到 -->
+    </bean>
+
+    <bean id="adminExceptionResolver" class="com.ygg.admin.filter.AdminExceptionResolver"/>
+
+    <!-- 自定义的文件上传解析器，不再拦截ueditor的文件上传 -->
+    <bean id="multipartResolver" class="com.ygg.admin.util.mvc.CustomizedMultipartResolver">
+        <property name="defaultEncoding" value="utf-8"/>
+        <property name="maxUploadSize" value="31457280"/>
+        <property name="resolveLazily" value="true"/>
+        <property name="maxInMemorySize" value="2097152"/>
+    </bean>
+
+</beans>

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.ggj.platform:gsf-api:1.2-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/ggj/platform/gsf-api/1.2-SNAPSHOT/gsf-api-1.2-20180108.050129-11.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/ggj/platform/gsf-api/1.2-SNAPSHOT/gsf-api-1.2-20180108.050129-11-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/ggj/platform/gsf-api/1.2-SNAPSHOT/gsf-api-1.2-20180108.050129-11-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE urlrewrite PUBLIC "-//tuckey.org//DTD UrlRewrite 3.2//EN" "\\urlrewrite3.2.dtd">
+<urlrewrite>
+    <rule>
+        <condition name="host" operator="equal">admin.gegejia.com</condition>
+        <from>^/order/(.*)$</from>
+        <to type="redirect">http://order.admin.gegejia.com/order/$1</to>
+    </rule>
+    <rule>
+        <condition name="host" operator="notequal">admin.gegejia.com</condition>
+        <from>^/order/(.*)$</from>
+        <to type="redirect">http://121.40.160.90:9003/order/$1</to>
+    </rule>
+    <rule>
+        <condition name="host" operator="equal">admin.gegejia.com</condition>
+        <from>^/orderManual/(.*)$</from>
+        <to type="redirect">http://order.admin.gegejia.com/orderManual/$1</to>
+    </rule>
+    <rule>
+        <condition name="host" operator="notequal">admin.gegejia.com</condition>
+        <from>/orderManual/(.*)$</from>
+        <to type="redirect">http://121.40.160.90:9003/orderManual/$1</to>
+    </rule>
+</urlrewrite>

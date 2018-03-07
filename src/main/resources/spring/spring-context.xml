@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.3.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+    <util:properties id="config" location="classpath:config/config.properties"/>
+
+    <import resource="classpath:spring/spring-database.xml"/>
+    <import resource="classpath:spring/spring-shiro.xml"/>
+    <import resource="classpath:spring/spring-cache.xml"/>
+
+    <!--<cache:annotation-driven cache-manager="oneCacheManager" key-generator="cacheKeyGenerator" />-->
+
+    <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+        <property name="messageConverters">
+            <list>
+                <bean id="stringHttpMessageConverter"
+                      class="org.springframework.http.converter.StringHttpMessageConverter">
+                    <constructor-arg index="0">
+                        <value>UTF-8</value>
+                    </constructor-arg>
+                </bean>
+                <bean id="byteArrayHttpMessageConverter"
+                      class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
+                <bean id="formHttpMessageConverter"
+                      class="org.springframework.http.converter.FormHttpMessageConverter"/>
+                <bean id="sourceHttpMessageConverter"
+                      class="org.springframework.http.converter.xml.SourceHttpMessageConverter"/>
+                <bean id="allEncompassingFormHttpMessageConverter"
+                      class="org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter"/>
+            </list>
+        </property>
+    </bean>
+    <bean id="springContextUtil" class="com.ygg.admin.util.SpringContextUtil"/>
+
+    <bean id="logAspect" class="com.ygg.admin.aspect.LogAspect"/>
+</beans>
