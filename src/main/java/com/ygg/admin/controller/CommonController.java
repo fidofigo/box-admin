@@ -30,7 +30,7 @@ public class CommonController
 {
     @Resource
     private MenuService menuService;
-    
+
     @Resource
     private UserService userService;
 
