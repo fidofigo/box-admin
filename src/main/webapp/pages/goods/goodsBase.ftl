@@ -112,7 +112,7 @@
 
     function editIsDisplay(id,isAvailable) {
         $.ajax({
-            url: '${rc.contextPath}/goods/updateGoodsBase',
+            url: '${rc.contextPath}/goodsBase/updateGoodsBase',
             type:"POST",
             data: {id:id,isAvailable:isAvailable},
             success: function(data) {
@@ -130,7 +130,7 @@
         $.messager.confirm("提示信息","确定删除么？",function(re){
             if(re){
                 $.messager.progress();
-                $.post("${rc.contextPath}/goods/deleteGoodsBase",{id:id},function(data){
+                $.post("${rc.contextPath}/goodsBase/deleteGoodsBase",{id:id},function(data){
                     $.messager.progress('close');
                     if(data.status == 1){
                         $.messager.alert('响应信息',"删除成功...",'info',function(){
@@ -172,7 +172,7 @@
                         } else {
                             $.messager.progress();
                             $.ajax({
-                                url: '${rc.contextPath}/goods/saveOrUpdateGoodsBase',
+                                url: '${rc.contextPath}/goodsBase/saveOrUpdateGoodsBase',
                                 type: 'post',
                                 dataType: 'json',
                                 data: params,
@@ -208,7 +208,7 @@
             striped: true,
             collapsible:true,
             idField:'id',
-            url:'${rc.contextPath}/goods/jsonGoodsBase',
+            url:'${rc.contextPath}/goodsBase/jsonGoodsBase',
             loadMsg:'正在装载数据...',
             singleSelect:true,
             fitColumns:true,

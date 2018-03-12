@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/goods")
+@RequestMapping("/goodsBase")
 public class GoodsBaseController
 {
     Logger log = Logger.getLogger(GoodsBaseController.class);
