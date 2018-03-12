@@ -9,6 +9,8 @@ public enum ControllerMappingEnum
     
     menu("MenuController", "菜单"),
 
+    goodsBase("GoodsBaseController", "基础商品"),
+
     ;
     
     final String controllerName;
@@ -37,7 +39,9 @@ public enum ControllerMappingEnum
     {
         ControllerMappingEnum mapping = ValueMap.valuesMap.get(name);
         if (mapping != null)
+        {
             return mapping.getControllerDesc();
+        }
         return null;
     }
     

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="GoodsBaseMapper">
+
+    <select id="findAllGoodsBase" parameterType="map" resultType="map">
+        SELECT
+        id,
+        category_id as categoryId,
+        is_available as isAvailable,
+        `name`,
+        brand,
+        country
+        FROM
+        goods_base
+        <trim prefix="where" prefixOverrides="AND">
+            <if test="id != null">AND id = #{id}</if>
+            <if test="categoryId != null">AND category_id = #{categoryId}</if>
+            <if test="isAvailable != null">AND is_available=#{isAvailable}</if>
+        </trim>
+        <if test="start != null">LIMIT #{start},#{max}</if>
+    </select>
+
+    <select id="countGoodsBase" parameterType="map" resultType="int">
+        SELECT
+        COUNT(id)
+        FROM
+        goods_base
+        <trim prefix="where" prefixOverrides="AND">
+            <if test="id != null">AND id = #{id}</if>
+            <if test="categoryId != null">AND category_id = #{categoryId}</if>
+            <if test="isAvailable != null">AND is_available=#{isAvailable}</if>
+        </trim>
+    </select>
+
+    <insert id="saveGoodsBase" parameterType="map">
+        INSERT INTO goods_base(category_id, `name`, is_available, brand,
+        country, create_time, update_time)
+        VALUES(#{categoryId}, #{name}, #{isAvailable}, #{brand},
+        #{country}, now(), now())
+    </insert>
+
+    <update id="updateGoodsBase" parameterType="map">
+        UPDATE
+        goods_base
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="name != null">`name`=#{name},</if>
+            <if test="isAvailable != null">is_available = #{isAvailable},</if>
+            <if test="brand != null">brand=#{brand},</if>
+            <if test="country != null">country=#{country},</if>
+        </trim>
+        WHERE id=#{id}
+    </update>
+
+    <delete id="deleteGoodsBase" parameterType="int">
+        delete from goods_base where id=#{id}
+    </delete>
+    
+</mapper>
