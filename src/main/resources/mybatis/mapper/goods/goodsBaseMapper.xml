@@ -11,7 +11,8 @@
         is_available as isAvailable,
         `name`,
         brand,
-        country
+        country,
+        image
         FROM
         goods_base
         <trim prefix="where" prefixOverrides="AND">
@@ -37,9 +38,9 @@
 
     <insert id="saveGoodsBase" parameterType="map">
         INSERT INTO goods_base(category_id, `name`, is_available, brand,
-        country, create_time, update_time)
+        country, image, create_time, update_time)
         VALUES(#{categoryId}, #{name}, #{isAvailable}, #{brand},
-        #{country}, now(), now())
+        #{country}, #{image}, now(), now())
     </insert>
 
     <update id="updateGoodsBase" parameterType="map">
@@ -51,6 +52,7 @@
             <if test="isAvailable != null">is_available = #{isAvailable},</if>
             <if test="brand != null">brand=#{brand},</if>
             <if test="country != null">country=#{country},</if>
+            <if test="image != null">image=#{image},</if>
         </trim>
         WHERE id=#{id}
     </update>

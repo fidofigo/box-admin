@@ -129,32 +129,22 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-context-support:4.3.2.RELEASE" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.12" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.7" level="project" />
     <orderEntry type="library" name="Maven: com.github.kischang:fastdfs-client:0.1" level="project" />
     <orderEntry type="library" name="Maven: commons-pool:commons-pool:1.6" level="project" />
-    <orderEntry type="library" name="Maven: com.ggj.platform:jupiter:1.0.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.aliyun.oss:aliyun-sdk-oss:2.4.0" level="project" />
+    <orderEntry type="library" name="Maven: com.aliyun.oss:aliyun-sdk-oss:2.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.jdom:jdom:1.1" level="project" />
     <orderEntry type="library" name="Maven: net.sf.json-lib:json-lib:jdk15:2.4" level="project" />
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.5" level="project" />
     <orderEntry type="library" name="Maven: net.sf.ezmorph:ezmorph:1.0.6" level="project" />
-    <orderEntry type="library" name="Maven: com.upyun:java-sdk:3.13" level="project" />
-    <orderEntry type="library" name="Maven: org.json:json:20160212" level="project" />
-    <orderEntry type="library" name="Maven: com.squareup.okhttp3:okhttp:3.4.1" level="project" />
-    <orderEntry type="library" name="Maven: com.squareup.okio:okio:1.9.0" level="project" />
-    <orderEntry type="library" name="Maven: com.ggj.platform:xconf-client:1.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: org.xerial:sqlite-jdbc:3.8.11.2" level="project" />
-    <orderEntry type="library" name="Maven: com.ggj.platform:xconf-common:1.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-all:4.1.5.Final" level="project" />
-    <orderEntry type="library" name="Maven: com.101tec:zkclient:0.3" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: javax.el:javax.el-api:2.2.4" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: com.sun.el:el-ri:1.0" level="project" />
-    <orderEntry type="library" name="Maven: com.ggj.common:common-api:1.4.1-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.ggj.platform:gsf-api:1.2-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.ygg.uc:user-center-api:0.0.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.ggj.platform:gsf-api:1.3-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: com.alibaba:dubbo:2.8.4.1" level="project" />
     <orderEntry type="library" name="Maven: aopalliance:aopalliance:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.javassist:javassist:3.15.0-GA" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.4" level="project" />
-    <orderEntry type="library" name="Maven: com.ygg.uc:user-center-api:0.0.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.101tec:zkclient:0.3" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: javax.el:javax.el-api:2.2.4" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.sun.el:el-ri:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.16.10" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.data:spring-data-redis:1.8.8.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.data:spring-data-keyvalue:1.2.8.RELEASE" level="project" />

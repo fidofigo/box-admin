@@ -1,13 +1,14 @@
 package com.ygg.admin.controller;
 
-import java.awt.image.BufferedImage;
-import java.util.*;
-
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
-
+import com.alibaba.fastjson.JSON;
+import com.aliyun.oss.OSSClient;
+import com.google.common.base.Splitter;
+import com.ygg.admin.annotation.ControllerLog;
+import com.ygg.admin.annotation.PermissionDesc;
+import com.ygg.admin.util.AliyunOSSClientUtil;
+import com.ygg.admin.util.OSSClientConstants;
+import com.ygg.admin.util.StringUtils;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,12 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.alibaba.fastjson.JSON;
-import com.ggj.platform.jupiter.exception.FileClientException;
-import com.google.common.base.Splitter;
-import com.ygg.admin.annotation.ControllerLog;
-import com.ygg.admin.annotation.PermissionDesc;
-import com.ygg.admin.util.UploadUtil;
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import java.awt.image.BufferedImage;
+import java.util.*;
 
 @Controller
 @RequestMapping("/pic")
@@ -146,25 +145,13 @@ public class PictureController
                     return JSON.toJSONString(result);
                 }
             }
-            String directory = getDirectory(request);// 获取图片目录
-            byte[] bt = file.getBytes();
-            String fileName = file.getOriginalFilename();
-            logger.debug("上传图片原fileName：" + fileName);
-            
-            String prefix = fileName.substring(fileName.lastIndexOf(".") + 1);
-            if (imageType == 1 && !"jpg".equals(prefix))
-            {
-                result.put("status", 0);
-                result.put("msg", "图片格式不是jpg格式");
-                return JSON.toJSONString(result);
-            }
-            
-            int pointIndex = fileName.lastIndexOf(".");
-            String fileExt = fileName.substring(pointIndex);
-            String id = Long.toHexString(Long.valueOf(random.nextInt(10) + "" + System.currentTimeMillis() + "" + random.nextInt(10)));
-            fileName = directory + id + fileExt.toLowerCase();
-            logger.debug("上传图片新fileName：" + fileName);
-            result = toUP(bt, fileName);
+
+            String originalFilename = file.getOriginalFilename();
+            String substring = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+            Random random = new Random();
+            String name = random.nextInt(10000) + System.currentTimeMillis() + substring;
+
+            result = toUP(file, OSSClientConstants.FOLDER + name);
             result.put("width", imageWidth);
             result.put("height", imageHeight);
             result.put("prompt", prompt);
@@ -186,21 +173,22 @@ public class PictureController
         return JSON.toJSONString(result);
     }
     
-    private Map<String, Object> toUP(byte[] bt, String fileName)
+    private Map<String, Object> toUP(MultipartFile file, String name)
     {
         Map<String, Object> result = new HashMap<>();
-        try
-        {
-            String url = UploadUtil.getClusterClient().upload(bt, fileName);
-            result.put("status", 1);
-            result.put("url", url);
-        }
-        catch (FileClientException e)
-        {
-            logger.error("上传图片异常", e);
-            result.put("status", 0);
-            result.put("msg", "文件上传失败");
-        }
+
+        OSSClient ossClient = AliyunOSSClientUtil.getOSSClient();
+
+        String ossName = AliyunOSSClientUtil.uploadObject2OSS(ossClient, file, name);
+
+        String[] split = name.split("/");
+        Date expiration = new Date(System.currentTimeMillis() + 3600L * 1000 * 24 * 365 * 10);
+        String imgUrl = ossClient.generatePresignedUrl(OSSClientConstants.BACKET_NAME, OSSClientConstants.FOLDER + split[split.length - 1], expiration).toString();
+        String[] splitUrl = imgUrl.split("\\?");
+
+        result.put("status", 1);
+        result.put("url", splitUrl[0]);
+
         return result;
     }
     
@@ -241,26 +229,15 @@ public class PictureController
                 String id = Long.toHexString(Long.valueOf(random.nextInt(10) + "" + System.currentTimeMillis() + "" + random.nextInt(10)));
                 fileName = id + fileExt.toLowerCase();
                 logger.info("上传图片新fileName：" + fileName);
-                
+
                 Map<String, Object> resultMap = new HashMap<>();
-                String url;
-                try
-                {
-                    url = UploadUtil.getClusterClient().upload(bt, fileName);
-                    resultMap.put("status", "success");
-                    result.put("status", 1);
-                    result.put("url", url);
-                    result.put("msg", "成功");
-                    result.put("originalName", oldName);
-                }
-                catch (FileClientException e)
-                {
-                    logger.error("文件上传失败", e);
-                    resultMap.put("status", "fail");
-                    result.put("status", 0);
-                    result.put("msg", "失败");
-                    result.put("originalName", oldName);
-                }
+
+                result = toUP(file, OSSClientConstants.FOLDER + fileName);
+                resultMap.put("status", "success");
+                result.put("status", 1);
+                result.put("msg", "成功");
+                result.put("originalName", oldName);
+
                 logger.info("上传图片返回状态：" + resultMap.get("status"));
             }
         }
@@ -271,60 +248,6 @@ public class PictureController
             result.put("msg", "文件上传失败");
         }
         return JSON.toJSONString(result);
-    }
-    
-    private String getDirectory(HttpServletRequest request)
-    {
-        String directoryName = "";
-        String referer = request.getHeader("Referer");
-        if (referer.contains("/banner/") || referer.contains("/banner/"))
-        {
-            directoryName = "activity/banner/";// 首页轮播图
-        }
-        else if (referer.contains("/indexSale/") || referer.contains("/indexSale/"))
-        {
-            directoryName = "activity/saleWindow/";// 首页特卖位
-        }
-        else if (referer.contains("/sale/") || referer.contains("/sale/"))
-        {
-            directoryName = "activity/activitiesCommon/";// 特卖专场
-        }
-        else if (referer.contains("/brand/") || referer.contains("/brand/"))
-        {
-            directoryName = "brand/";// 品牌
-        }
-        else if (referer.contains("/image/") || referer.contains("/image/"))
-        {
-            if (referer.contains("type=sale"))
-            {
-                directoryName = "gegeImage/activity/"; // 特卖格格说头像
-            }
-            else if (referer.contains("type=product"))
-            {
-                directoryName = "gegeImage/product/"; // 商品格格说头像
-            }
-        }
-        else if (referer.contains("/refund/"))
-        {
-            directoryName = "orderrefund/applyImages/"; // 退款退货 图片
-        }
-        else if (referer.contains("/product") || referer.contains("/product") || referer.contains("/klProduct"))
-        {
-            directoryName = "product/"; // 商品资源图
-        }
-        else if (referer.contains("/saleTag/") || referer.contains("/saleTag/"))
-        {
-            directoryName = "saleTag/"; // 特卖标签
-        }
-        else if (referer.contains("/pic/toBatch"))
-        {
-            directoryName = "batch/"; // 批量图片上传
-        }
-        else if (referer.contains("/seller"))
-        {
-            directoryName = "seller/"; // 批量图片上传
-        }
-        return directoryName;
     }
     
 }

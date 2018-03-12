@@ -66,6 +66,11 @@
                         <font color="red">*</font>
                     </p>
                     <p>
+                        <span>图片：</span>
+                        <span><input type="text" name="image" id="image" value="" maxlength="100" style="width: 300px;"/></span>
+                        <a onclick="picDialogOpen('image')" href="javascript:;" class="easyui-linkbutton">上传图片</a><font color="red">*</font>
+                    </p>
+                    <p>
                         <span>可用状态：</span>
                         <span><input type="radio" name="isAvailable" id="isAvailable1" checked="checked" value="1"/>可用&nbsp;&nbsp;</span>
                         <span><input type="radio" name="isAvailable" id="isAvailable0" value="0"/>停用</span>
@@ -77,14 +82,14 @@
     </div>
 </div>
 
-<#--<div id="picDia" class="easyui-dialog" icon="icon-save" align="center"-->
-     <#--style="padding: 5px; width: 300px; height: 150px;">-->
-    <#--<form id="picForm" method="post" enctype="multipart/form-data">-->
-        <#--<input id="picFile" type="file" name="picFile" />&nbsp;&nbsp;<br/><br/>-->
-        <#--<a href="javascript:;" onclick="picUpload()" class="easyui-linkbutton" iconCls='icon-reload'>提交图片</a>-->
-    <#--</form>-->
-    <#--<br><br>-->
-<#--</div>-->
+<div id="picDia" class="easyui-dialog" icon="icon-save" align="center"
+     style="padding: 5px; width: 300px; height: 150px;">
+    <form id="picForm" method="post" enctype="multipart/form-data">
+        <input id="picFile" type="file" name="picFile" />&nbsp;&nbsp;<br/><br/>
+        <a href="javascript:;" onclick="picUpload()" class="easyui-linkbutton" iconCls='icon-reload'>提交图片</a>
+    </form>
+    <br><br>
+</div>
 
 <script type="application/javascript">
 
@@ -105,6 +110,7 @@
         }
         $("input[name='name']").val(arr.rows[index].name);
         $("input[name='categoryId']").val(arr.rows[index].categoryId);
+        $("input[name='image']").val(arr.rows[index].image);
         $("input[name='brand']").val(arr.rows[index].brand);
         $("input[name='country']").val(arr.rows[index].country);
         $('#editDiv').dialog('open');
@@ -164,9 +170,10 @@
                         params.isAvailable = $("input[name='isAvailable']:checked").val();
                         params.name = $("input[name='name']").val();
                         params.brand = $("input[name='brand']").val();
+                        params.image = $("input[name='image']").val();
                         params.country = $("input[name='country']").val();
                         params.categoryId = $("input[name='categoryId']").val();
-                        if(params.name == '' || params.brand == '' || params.country == '' || params.categoryId == '') {
+                        if(params.name == '' || params.brand == '' || params.country == '' || params.categoryId == '' || params.image == '') {
                             $.messager.alert("error","请填写完整信息","error");
                             return false;
                         } else {
@@ -252,6 +259,7 @@
                     $("#isAvailable1").prop("checked", "checked");
                     $("input[name='name']").val("");
                     $("input[name='brand']").val("");
+                    $("input[name='image']").val("");
                     $("input[name='country']").val("");
                     $("input[name='categoryId']").val("");
                     $('#editDiv').dialog('open');
@@ -261,48 +269,48 @@
         });
     });
 
-    <#--$(function(){-->
-        <#--$('#picDia').dialog({-->
-            <#--title:'又拍图片上传窗口',-->
-            <#--collapsible:true,-->
-            <#--closed:true,-->
-            <#--modal:true-->
-        <#--});-->
-    <#--});-->
+    $(function(){
+        $('#picDia').dialog({
+            title:'图片上传窗口',
+            collapsible:true,
+            closed:true,
+            modal:true
+        });
+    });
 
-    <#--var inputId;-->
-    <#--function picDialogOpen($inputId) {-->
-        <#--inputId = $inputId;-->
-        <#--$("#picDia").dialog("open");-->
-        <#--$("#yun_div").css('display','none');-->
-    <#--}-->
+    var inputId;
+    function picDialogOpen($inputId) {
+        inputId = $inputId;
+        $("#picDia").dialog("open");
+        $("#yun_div").css('display','none');
+    }
 
-    <#--function picDialogClose() {-->
-        <#--$("#picDia").dialog("close");-->
-    <#--}-->
+    function picDialogClose() {
+        $("#picDia").dialog("close");
+    }
 
-    <#--function picUpload() {-->
-        <#--$('#picForm').form('submit',{-->
-            <#--url:"${rc.contextPath}/pic/fileUpLoad",-->
-            <#--success:function(data){-->
-                <#--var res = eval("("+data+")")-->
-                <#--if(res.status == 1){-->
-                    <#--$.messager.alert('响应信息',"上传成功...",'info',function(){-->
-                        <#--$("#picDia").dialog("close");-->
-                        <#--if(inputId) {-->
-                            <#--$("#"+inputId).val(res.url);-->
-                            <#--$("#picFile").val("");-->
-                        <#--}-->
-                        <#--return-->
-                    <#--});-->
-                <#--} else{-->
-                    <#--$.messager.alert('响应信息',res.msg,'error',function(){-->
-                        <#--return ;-->
-                    <#--});-->
-                <#--}-->
-            <#--}-->
-        <#--})-->
-    <#--}-->
+    function picUpload() {
+        $('#picForm').form('submit',{
+            url:"${rc.contextPath}/pic/fileUpLoad",
+            success:function(data){
+                var res = eval("("+data+")")
+                if(res.status == 1){
+                    $.messager.alert('响应信息',"上传成功...",'info',function(){
+                        $("#picDia").dialog("close");
+                        if(inputId) {
+                            $("#"+inputId).val(res.url);
+                            $("#picFile").val("");
+                        }
+                        return
+                    });
+                } else{
+                    $.messager.alert('响应信息',res.msg,'error',function(){
+                        return ;
+                    });
+                }
+            }
+        })
+    }
 
 </script>
 

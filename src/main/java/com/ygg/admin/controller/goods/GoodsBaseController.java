@@ -103,6 +103,7 @@ public class GoodsBaseController
         @RequestParam(value = "categoryId", required = false, defaultValue = "1") int categoryId,
         @RequestParam(value = "isAvailable", required = false, defaultValue = "1") int isAvailable,
         @RequestParam(value = "brand", required = false, defaultValue = "0") String brand,
+        @RequestParam(value = "image", required = false, defaultValue = "") String image,
         @RequestParam(value = "country", required = false, defaultValue = "") String country)
     {
         try {
@@ -110,6 +111,7 @@ public class GoodsBaseController
             para.put("name", name);
             para.put("isAvailable", isAvailable);
             para.put("categoryId", categoryId);
+            para.put("image", image);
             para.put("name", name);
             para.put("brand", brand);
             para.put("country", country);
