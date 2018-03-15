@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CategoryMapper">
+
+    <select id="findAllCategory" parameterType="map" resultType="map">
+        SELECT
+        id,
+        sequence,
+        is_available as isAvailable,
+        `name`
+        FROM
+        category
+        <trim prefix="where" prefixOverrides="AND">
+            <if test="id != null">AND id = #{id}</if>
+            <if test="name != null">AND `name` like #{name}</if>
+            <if test="isAvailable != null">AND is_available=#{isAvailable}</if>
+        </trim>
+        ORDER BY sequence ASC
+        <if test="start != null">LIMIT #{start},#{max}</if>
+    </select>
+
+    <select id="countCategory" parameterType="map" resultType="int">
+        SELECT
+        COUNT(id)
+        FROM
+        category
+        <trim prefix="where" prefixOverrides="AND">
+            <if test="id != null">AND id = #{id}</if>
+            <if test="name != null">AND `name` like #{name}</if>
+            <if test="isAvailable != null">AND is_available=#{isAvailable}</if>
+        </trim>
+    </select>
+
+    <insert id="saveCategory" parameterType="map">
+        INSERT INTO category(sequence, `name`, is_available, create_time, update_time)
+        VALUES(#{sequence}, #{name}, #{isAvailable}, now(), now())
+    </insert>
+
+    <update id="updateCategory" parameterType="map">
+        UPDATE
+        category
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sequence != null">sequence = #{sequence},</if>
+            <if test="name != null">`name`=#{name},</if>
+            <if test="isAvailable != null">is_available = #{isAvailable},</if>
+        </trim>
+        WHERE id=#{id}
+    </update>
+
+    <delete id="deleteCategory" parameterType="int">
+        delete from category where id=#{id}
+    </delete>
+
+</mapper>

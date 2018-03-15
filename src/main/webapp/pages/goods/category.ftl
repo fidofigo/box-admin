@@ -19,11 +19,11 @@
 
 <div data-options="region:'center'" style="padding:5px;">
     <div id="cc" class="easyui-layout" data-options="fit:true" >
-        <div data-options="region:'north',title:'基础商品系统',split:true" style="height: 100px;">
+        <div data-options="region:'north',title:'类目系统',split:true" style="height: 100px;">
             <br/>
             <div style="height: 60px;padding: 10px">
                 <span>类目id：</span>
-                <span><input id="searchCategoryId" name="searchCategoryId"/></span>
+                <span><input id="searchTitle" name="searchTitle"/></span>
                 <span>是否可用：</span>
                 <span>
 					<select id="searchIsAvailable" name="searchIsAvailable">
@@ -33,7 +33,7 @@
                     </select>
 				</span>
                 <span>
-					<a id="searchBtn" onclick="searchGoodsBase()" href="javascript:;" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a>&nbsp;
+					<a id="searchBtn" onclick="searchCategory()" href="javascript:;" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a>&nbsp;
 				</span>
             </div>
         </div>
@@ -42,33 +42,18 @@
             <table id="s_data" style=""></table>
 
             <!-- 新增 begin -->
-            <div id="editDiv" class="easyui-dialog" style="width:550px;height:450px;padding:15px 20px;">
+            <div id="editDiv" class="easyui-dialog" style="width:550px;height:200px;padding:15px 20px;">
                 <form id="editDiv_form" method="post">
                     <input id="editId" type="hidden" name="editId" value="0" >
                     <p>
-                        <span>商品名称：</span>
+                        <span>类目名称：</span>
                         <span><input type="text" name="name" id="name" value="" maxlength="64" style="width: 300px;"/></span>
                         <font color="red">*</font>
                     </p>
                     <p>
-                        <span>品牌：</span>
-                        <span><input type="text" name="brand" id="brand" value="" maxlength="64" style="width: 300px;"/></span>
+                        <span>排序：</span>
+                        <span><input type="text" name="sequence" id="sequence" value="" maxlength="64" style="width: 300px;"/></span>
                         <font color="red">*</font>
-                    </p>
-                    <p>
-                        <span>产地：</span>
-                        <span><input type="text" name="country" id="country" value="" maxlength="64" style="width: 300px;"/></span>
-                        <font color="red">*</font>
-                    </p>
-                    <p>
-                        <span>类目id：</span>
-                        <span><input type="text" name="categoryId" id="categoryId" value="" maxlength="32" style="width: 300px;"/></span>
-                        <font color="red">*</font>
-                    </p>
-                    <p>
-                        <span>图片：</span>
-                        <span><input type="text" name="image" id="image" value="" maxlength="100" style="width: 300px;"/></span>
-                        <a onclick="picDialogOpen('image')" href="javascript:;" class="easyui-linkbutton">上传图片</a><font color="red">*</font>
                     </p>
                     <p>
                         <span>可用状态：</span>
@@ -82,20 +67,11 @@
     </div>
 </div>
 
-<div id="picDia" class="easyui-dialog" icon="icon-save" align="center"
-     style="padding: 5px; width: 300px; height: 150px;">
-    <form id="picForm" method="post" enctype="multipart/form-data">
-        <input id="picFile" type="file" name="picFile" />&nbsp;&nbsp;<br/><br/>
-        <a href="javascript:;" onclick="picUpload()" class="easyui-linkbutton" iconCls='icon-reload'>提交图片</a>
-    </form>
-    <br><br>
-</div>
-
 <script type="application/javascript">
 
-    function searchGoodsBase() {
+    function searchCategory() {
         $('#s_data').datagrid('load', {
-            categoryId : $("#searchCategoryId").val(),
+            name : $("#searchTitle").val(),
             isAvailable : $("#searchIsAvailable").val()
         });
     }
@@ -109,16 +85,13 @@
             $("#isAvailable0").prop("checked", "checked");//prop
         }
         $("input[name='name']").val(arr.rows[index].name);
-        $("input[name='categoryId']").val(arr.rows[index].categoryId);
-        $("input[name='image']").val(arr.rows[index].image);
-        $("input[name='brand']").val(arr.rows[index].brand);
-        $("input[name='country']").val(arr.rows[index].country);
+        $("input[name='sequence']").val(arr.rows[index].sequence);
         $('#editDiv').dialog('open');
     }
 
     function editIsDisplay(id,isAvailable) {
         $.ajax({
-            url: '${rc.contextPath}/goodsBase/updateGoodsBase',
+            url: '${rc.contextPath}/category/updateCategory',
             type:"POST",
             data: {id:id,isAvailable:isAvailable},
             success: function(data) {
@@ -136,7 +109,7 @@
         $.messager.confirm("提示信息","确定删除么？",function(re){
             if(re){
                 $.messager.progress();
-                $.post("${rc.contextPath}/goodsBase/deleteGoodsBase",{id:id},function(data){
+                $.post("${rc.contextPath}/category/deleteCategory",{id:id},function(data){
                     $.messager.progress('close');
                     if(data.status == 1){
                         $.messager.alert('响应信息',"删除成功...",'info',function(){
@@ -156,7 +129,7 @@
     $(function(){
 
         $('#editDiv').dialog({
-            title:'基础商品系统',
+            title:'类目系统',
             collapsible: true,
             closed: true,
             modal: true,
@@ -169,17 +142,14 @@
                         params.id = $("input[name='editId']").val();
                         params.isAvailable = $("input[name='isAvailable']:checked").val();
                         params.name = $("input[name='name']").val();
-                        params.brand = $("input[name='brand']").val();
-                        params.image = $("input[name='image']").val();
-                        params.country = $("input[name='country']").val();
-                        params.categoryId = $("input[name='categoryId']").val();
-                        if(params.name == '' || params.brand == '' || params.country == '' || params.categoryId == '' || params.image == '') {
+                        params.sequence = $("input[name='sequence']").val();
+                        if(params.name == '' || params.sequence == '') {
                             $.messager.alert("error","请填写完整信息","error");
                             return false;
                         } else {
                             $.messager.progress();
                             $.ajax({
-                                url: '${rc.contextPath}/goodsBase/saveOrUpdateGoodsBase',
+                                url: '${rc.contextPath}/category/saveOrUpdateCategory',
                                 type: 'post',
                                 dataType: 'json',
                                 data: params,
@@ -215,7 +185,7 @@
             striped: true,
             collapsible:true,
             idField:'id',
-            url:'${rc.contextPath}/goodsBase/jsonGoodsBase',
+            url:'${rc.contextPath}/category/jsonCategory',
             loadMsg:'正在装载数据...',
             singleSelect:true,
             fitColumns:true,
@@ -224,10 +194,8 @@
             pageList:[50,60],
             columns:[[
                 {field:'id',    title:'ID', width:20, align:'center'},
-                {field:'name', title:'基础商品名称', width:50, align:'center'},
-                {field:'brand', title:'品牌', width:50, align:'center'},
-                {field:'country', title:'产地', width:50, align:'center'},
-                {field:'categoryId', title:'类目id', width:50, align:'center'},
+                {field:'name', title:'类目名称', width:50, align:'center'},
+                {field:'sequence', title:'排序', width:50, align:'center'},
                 {field:'isAvailable',    title:'可用状态', width:30, align:'center',
                     formatter:function(value,row,index){
                         if(row.isAvailable == 1){
@@ -252,65 +220,19 @@
             ]],
             toolbar:[{
                 id:'_add',
-                text:'新增基础商品',
+                text:'新增类目',
                 iconCls:'icon-add',
                 handler:function(){
                     $("input[name='editId']").val("0");
                     $("#isAvailable1").prop("checked", "checked");
                     $("input[name='name']").val("");
-                    $("input[name='brand']").val("");
-                    $("input[name='image']").val("");
-                    $("input[name='country']").val("");
-                    $("input[name='categoryId']").val("");
+                    $("input[name='sequence']").val("");
                     $('#editDiv').dialog('open');
                 }
             }],
             pagination:true
         });
     });
-
-    $(function(){
-        $('#picDia').dialog({
-            title:'图片上传窗口',
-            collapsible:true,
-            closed:true,
-            modal:true
-        });
-    });
-
-    var inputId;
-    function picDialogOpen($inputId) {
-        inputId = $inputId;
-        $("#picDia").dialog("open");
-        $("#yun_div").css('display','none');
-    }
-
-    function picDialogClose() {
-        $("#picDia").dialog("close");
-    }
-
-    function picUpload() {
-        $('#picForm').form('submit',{
-            url:"${rc.contextPath}/pic/fileUpLoad",
-            success:function(data){
-                var res = eval("("+data+")")
-                if(res.status == 1){
-                    $.messager.alert('响应信息',"上传成功...",'info',function(){
-                        $("#picDia").dialog("close");
-                        if(inputId) {
-                            $("#"+inputId).val(res.url);
-                            $("#picFile").val("");
-                        }
-                        return
-                    });
-                } else{
-                    $.messager.alert('响应信息',res.msg,'error',function(){
-                        return ;
-                    });
-                }
-            }
-        })
-    }
 
 </script>
 

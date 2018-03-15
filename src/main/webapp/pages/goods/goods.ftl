@@ -135,7 +135,7 @@
 
     function searchGoods() {
         $('#s_data').datagrid('load', {
-            categoryId : $("#searchCategoryId").val(),
+            name : $("#searchTitle").val(),
             isAvailable : $("#searchIsAvailable").val()
         });
     }

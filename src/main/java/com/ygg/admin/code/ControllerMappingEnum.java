@@ -13,6 +13,8 @@ public enum ControllerMappingEnum
 
     goods("GoodsController", "商品"),
 
+    category("CategoryController", "类目"),
+
     ;
     
     final String controllerName;
