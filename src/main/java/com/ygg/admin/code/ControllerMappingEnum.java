@@ -11,6 +11,8 @@ public enum ControllerMappingEnum
 
     goodsBase("GoodsBaseController", "基础商品"),
 
+    goods("GoodsController", "商品"),
+
     ;
     
     final String controllerName;

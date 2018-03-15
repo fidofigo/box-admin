@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="GoodsMapper">
+
+    <select id="findAllGoods" parameterType="map" resultType="map">
+        SELECT
+        id,
+        goods_base_id as goodsBaseId,
+        image1,
+        image2,
+        image3,
+        image4,
+        image5,
+        `name`,
+        `desc`,
+        income,
+        `limit`,
+        market_price as marketPrice,
+        sales_price as salesPrice,
+        category_id as categoryId,
+        is_available as isAvailable
+        FROM
+        goods
+        <trim prefix="where" prefixOverrides="AND">
+            <if test="id != null">AND id = #{id}</if>
+            <if test="name != null">AND `name` like #{name}</if>
+            <if test="isAvailable != null">AND is_available=#{isAvailable}</if>
+        </trim>
+        ORDER BY id DESC
+        <if test="start != null">LIMIT #{start},#{max}</if>
+    </select>
+
+    <select id="countGoods" parameterType="map" resultType="int">
+        SELECT
+        COUNT(id)
+        FROM
+        goods
+        <trim prefix="where" prefixOverrides="AND">
+            <if test="id != null">AND id = #{id}</if>
+            <if test="name != null">AND `name` like #{name}</if>
+            <if test="isAvailable != null">AND is_available=#{isAvailable}</if>
+        </trim>
+    </select>
+
+    <insert id="saveGoods" parameterType="map">
+        INSERT INTO goods(goods_base_id, image1, image2, image3, image4, image5, `name`,
+        `desc`, income, `limit`, market_price, sales_price, category_id, is_available, create_time, update_time)
+        VALUES(#{goodsBaseId}, #{image1}, #{image2}, #{image3}, #{image4}, #{image5}, #{name},
+        #{desc}, #{income}, #{limit}, #{marketPrice}, #{salesPrice}, #{categoryId}, #{isAvailable}, now(), now())
+    </insert>
+
+    <update id="updateGoods" parameterType="map">
+        UPDATE
+        goods
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="goodsBaseId != null">goods_base_id = #{goodsBaseId},</if>
+            <if test="image1 != null">image1=#{image1},</if>
+            <if test="image2 != null">image2=#{image2},</if>
+            <if test="image3 != null">image3=#{image3},</if>
+            <if test="image4 != null">image4=#{image4},</if>
+            <if test="image5 != null">image5=#{image5},</if>
+            <if test="name != null">`name`=#{name},</if>
+            <if test="desc != null">`desc`=#{desc},</if>
+            <if test="income != null">income=#{income},</if>
+            <if test="limit != null">`limit`=#{limit},</if>
+            <if test="marketPrice != null">market_price=#{marketPrice},</if>
+            <if test="salesPrice != null">sales_price=#{salesPrice},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="isAvailable != null">is_available = #{isAvailable},</if>
+        </trim>
+        WHERE id=#{id}
+    </update>
+
+    <delete id="deleteGoods" parameterType="int">
+        delete from goods where id=#{id}
+    </delete>
+
+</mapper>
