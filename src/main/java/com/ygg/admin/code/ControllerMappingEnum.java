@@ -15,6 +15,8 @@ public enum ControllerMappingEnum
 
     category("CategoryController", "类目"),
 
+    shopAccount("ShopAccountController", "商铺用户"),
+
     ;
     
     final String controllerName;

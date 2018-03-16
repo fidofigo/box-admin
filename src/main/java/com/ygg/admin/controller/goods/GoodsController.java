@@ -50,7 +50,7 @@ public class GoodsController
      * 商品数据
      * @param page
      * @param rows
-     * @param categoryId
+     * @param name
      * @param isAvailable
      * @return
      */
@@ -59,7 +59,7 @@ public class GoodsController
     @PermissionDesc("商品json")
     public String jsonGoods(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
         @RequestParam(value = "rows", required = false, defaultValue = "50") int rows,
-        @RequestParam(value = "categoryId", required = false, defaultValue = "-1") int categoryId,
+        @RequestParam(value = "name", required = false, defaultValue = "") String name,
         @RequestParam(value = "isAvailable", required = false, defaultValue = "-1") int isAvailable)
     {
         try {
@@ -69,8 +69,8 @@ public class GoodsController
             }
             para.put("start", rows * (page - 1));
             para.put("max", rows);
-            if (categoryId != -1) {
-                para.put("categoryId", categoryId);
+            if (!"".equals(name)) {
+                para.put("name", "%" + name + "%");
             }
             if (isAvailable != -1) {
                 para.put("isAvailable", isAvailable);

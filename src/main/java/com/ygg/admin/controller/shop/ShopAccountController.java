@@ -1,9 +1,9 @@
-package com.ygg.admin.controller.goods;
+package com.ygg.admin.controller.shop;
 
 import com.alibaba.fastjson.JSON;
 import com.ygg.admin.annotation.ControllerLog;
 import com.ygg.admin.annotation.PermissionDesc;
-import com.ygg.admin.service.goods.GoodsBaseService;
+import com.ygg.admin.service.shop.ShopAccountService;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,26 +19,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/goodsBase")
-public class GoodsBaseController
+@RequestMapping("/shopAccount")
+public class ShopAccountController
 {
-    Logger log = Logger.getLogger(GoodsBaseController.class);
+    Logger log = Logger.getLogger(ShopAccountController.class);
 
     @Resource
-    private GoodsBaseService goodsBaseService;
+    private ShopAccountService shopAccountService;
 
     /**
-     * 基础商品
+     * 商铺用户
      * @param request
      * @return
      */
     @RequestMapping("/list")
-    @PermissionDesc("基础商品页")
+    @PermissionDesc("商铺用户页")
     public ModelAndView list(HttpServletRequest request)
     {
         ModelAndView mv = new ModelAndView();
         try {
-            mv.setViewName("goods/goodsBase");
+            mv.setViewName("shop/shopAccount");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             mv.setViewName("error/404");
@@ -47,19 +47,19 @@ public class GoodsBaseController
     }
 
     /**
-     * 基础商品数据
+     * 商铺用户数据
      * @param page
      * @param rows
-     * @param name
+     * @param email
      * @param isAvailable
      * @return
      */
-    @RequestMapping(value = "/jsonGoodsBase", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/jsonShopAccount", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @PermissionDesc("基础商品json")
-    public String jsonGoodsBase(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
+    @PermissionDesc("商铺用户json")
+    public String jsonShopAccount(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
         @RequestParam(value = "rows", required = false, defaultValue = "50") int rows,
-        @RequestParam(value = "name", required = false, defaultValue = "") String name,
+        @RequestParam(value = "email", required = false, defaultValue = "") String email,
         @RequestParam(value = "isAvailable", required = false, defaultValue = "-1") int isAvailable)
     {
         try {
@@ -69,15 +69,15 @@ public class GoodsBaseController
             }
             para.put("start", rows * (page - 1));
             para.put("max", rows);
-            if (!"".equals(name)) {
-                para.put("name", "%" + name + "%");
+            if (!"".equals(email)) {
+                para.put("email", "%" + email + "%");
             }
             if (isAvailable != -1) {
                 para.put("isAvailable", isAvailable);
             }
-            return goodsBaseService.findGoodsBaseByPara(para);
+            return shopAccountService.findShopAccountByPara(para);
         } catch (Exception e) {
-            log.error("异步加载基础商品出错：" + e.getMessage(), e);
+            log.error("异步加载商铺用户出错：" + e.getMessage(), e);
             Map<String, Object> resultMap = new HashMap<>();
             resultMap.put("rows", new ArrayList<>());
             resultMap.put("total", 0);
@@ -86,90 +86,87 @@ public class GoodsBaseController
     }
 
     /**
-     * 编辑基础商品
+     * 编辑商铺用户
      * @param id
-     * @param name
-     * @param brand
-     * @param country
+     * @param email
+     * @param pwd
+     * @param mobileNumber
      * @param isAvailable
      * @return
      */
-    @RequestMapping(value = "/saveOrUpdateGoodsBase", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/saveOrUpdateShopAccount", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @ControllerLog(description = "编辑基础商品")
-    @PermissionDesc("编辑基础商品")
-    public String saveOrUpdateGoodsBase(@RequestParam(value = "id", required = false, defaultValue = "0") int id,
-        @RequestParam(value = "name", required = false, defaultValue = "") String name,
-        @RequestParam(value = "categoryId", required = false, defaultValue = "1") int categoryId,
+    @ControllerLog(description = "编辑商铺用户")
+    @PermissionDesc("编辑商铺用户")
+    public String saveOrUpdateShopAccount(@RequestParam(value = "id", required = false, defaultValue = "0") int id,
+        @RequestParam(value = "email", required = false, defaultValue = "") String email,
+        @RequestParam(value = "pwd", required = false, defaultValue = "") String pwd,
         @RequestParam(value = "isAvailable", required = false, defaultValue = "1") int isAvailable,
-        @RequestParam(value = "brand", required = false, defaultValue = "0") String brand,
-        @RequestParam(value = "image", required = false, defaultValue = "") String image,
-        @RequestParam(value = "country", required = false, defaultValue = "") String country)
+        @RequestParam(value = "shopId", required = false, defaultValue = "0") int shopId,
+        @RequestParam(value = "mobileNumber", required = false, defaultValue = "") String mobileNumber)
     {
         try {
             Map<String, Object> para = new HashMap<>();
-            para.put("name", name);
+            para.put("email", email);
             para.put("isAvailable", isAvailable);
-            para.put("categoryId", categoryId);
-            para.put("image", image);
-            para.put("name", name);
-            para.put("brand", brand);
-            para.put("country", country);
+            para.put("pwd", pwd);
+            para.put("shopId", shopId);
+            para.put("mobileNumber", mobileNumber);
             if (id == 0) {
-                return goodsBaseService.saveGoodsBase(para);
+                return shopAccountService.saveShopAccount(para);
             } else {
                 para.put("id", id);
-                return goodsBaseService.updateGoodsBase(para);
+                return shopAccountService.updateShopAccount(para);
             }
         } catch (Exception e) {
             Map<String, Object> resultMap = new HashMap<>();
             log.error(e.getMessage(), e);
             resultMap.put("status", 0);
-            resultMap.put("msg", "编辑基础商品失败");
+            resultMap.put("msg", "编辑商铺用户失败");
             return JSON.toJSONString(resultMap);
         }
     }
 
     /**
-     * 删除基础商品
+     * 删除商铺用户
      * @param request
      * @param id
      * @return
      */
-    @RequestMapping(value = "/deleteGoodsBase", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/deleteShopAccount", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @ControllerLog(description = "删除基础商品")
-    @PermissionDesc("删除基础商品")
-    public String deleteGoodsBase(HttpServletRequest request, @RequestParam(value = "id", required = true) int id)
+    @ControllerLog(description = "删除商铺用户")
+    @PermissionDesc("删除商铺用户")
+    public String deleteShopAccount(HttpServletRequest request, @RequestParam(value = "id", required = true) int id)
     {
         Map<String, Object> result = new HashMap<>();
         try {
-            return goodsBaseService.deleteGoodsBase(id);
+            return shopAccountService.deleteShopAccount(id);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             result.put("status", 0);
-            result.put("msg", "删除基础商品失败");
+            result.put("msg", "删除商铺用户失败");
         }
         return JSON.toJSONString(result);
     }
 
     /**
-     * 更新基础商品
+     * 更新商铺用户
      * @param param
      * @return
      */
-    @RequestMapping(value = "/updateGoodsBase", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/updateShopAccount", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @PermissionDesc("更新基础商品")
-    public String updateGoodsBase(@RequestParam Map<String, Object> param)
+    @PermissionDesc("更新商铺用户")
+    public String updateShopAccount(@RequestParam Map<String, Object> param)
     {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         try {
-            return goodsBaseService.updateGoodsBase(param);
+            return shopAccountService.updateShopAccount(param);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             resultMap.put("status", 0);
-            resultMap.put("msg", "更新基础商品失败");
+            resultMap.put("msg", "更新商铺用户失败");
         }
         return JSON.toJSONString(resultMap);
     }
