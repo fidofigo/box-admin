@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ShopGoodsMapper">
+
+    <select id="findAllShopGoods" parameterType="map" resultType="map">
+        SELECT
+        id,
+        category_id as categoryId,
+        is_available as isAvailable,
+        goods_id as goodsId,
+        goods_base_id as goodsBaseId,
+        stock
+        FROM
+        shop_goods
+        <trim prefix="where" prefixOverrides="AND">
+            <if test="id != null">AND id = #{id}</if>
+            <if test="shopId != null">AND shop_id = #{shopId}</if>
+            <if test="isAvailable != null">AND is_available=#{isAvailable}</if>
+        </trim>
+        ORDER BY id DESC
+        <if test="start != null">LIMIT #{start},#{max}</if>
+    </select>
+
+    <select id="countShopGoods" parameterType="map" resultType="int">
+        SELECT
+        COUNT(id)
+        FROM
+        shop_goods
+        <trim prefix="where" prefixOverrides="AND">
+            <if test="id != null">AND id = #{id}</if>
+            <if test="shopId != null">AND shop_id = #{shopId}</if>
+            <if test="isAvailable != null">AND is_available=#{isAvailable}</if>
+        </trim>
+    </select>
+
+    <insert id="saveShopGoods" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO shop_goods(category_id, goods_id, is_available, goods_base_id, stock, shop_id, create_time, update_time)
+        VALUES(#{categoryId}, #{goodsId}, #{isAvailable}, #{goodsBaseId}, #{stock}, #{shopId}, now(), now())
+    </insert>
+
+    <update id="updateShopGoods" parameterType="map">
+        UPDATE
+        shop_goods
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="goodsId != null">goods_id = #{goodsId},</if>
+            <if test="isAvailable != null">is_available = #{isAvailable},</if>
+            <if test="categoryId != null">category_id=#{categoryId},</if>
+            <if test="goodsBaseId != null">goods_base_id=#{goodsBaseId},</if>
+            <if test="stock != null">stock=#{stock},</if>
+        </trim>
+        WHERE id=#{id}
+    </update>
+
+    <delete id="deleteShopGoods" parameterType="int">
+        delete from shop_goods where id=#{id}
+    </delete>
+
+</mapper>
