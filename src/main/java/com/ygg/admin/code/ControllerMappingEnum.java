@@ -17,6 +17,8 @@ public enum ControllerMappingEnum
 
     shopAccount("ShopAccountController", "商铺用户"),
 
+    shopInfo("ShopInfoController", "商铺信息"),
+
     ;
     
     final String controllerName;

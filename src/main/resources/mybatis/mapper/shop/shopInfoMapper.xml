@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ShopInfoMapper">
+
+    <select id="findAllShopInfo" parameterType="map" resultType="map">
+        SELECT
+        id,
+        mobile_number as mobileNumber,
+        is_available as isAvailable,
+        detail_address as detailAddress,
+        is_open as isOpen,
+        code,
+        income,
+        withdraw,
+        head,
+        `name`
+        FROM
+        shop
+        <trim prefix="where" prefixOverrides="AND">
+            <if test="id != null">AND id = #{id}</if>
+            <if test="name != null">AND `name` like #{name}</if>
+            <if test="isAvailable != null">AND is_available=#{isAvailable}</if>
+        </trim>
+        ORDER BY id DESC
+        <if test="start != null">LIMIT #{start},#{max}</if>
+    </select>
+
+    <select id="countShopInfo" parameterType="map" resultType="int">
+        SELECT
+        COUNT(id)
+        FROM
+        shop
+        <trim prefix="where" prefixOverrides="AND">
+            <if test="id != null">AND id = #{id}</if>
+            <if test="name != null">AND `name` like #{name}</if>
+            <if test="isAvailable != null">AND is_available=#{isAvailable}</if>
+        </trim>
+    </select>
+
+    <insert id="saveShopInfo" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO shop(mobile_number, detail_address, is_available, `name`, code, head, create_time, update_time)
+        VALUES(#{mobileNumber}, #{detailAddress}, #{isAvailable}, #{name}, #{code}, #{head}, now(), now())
+    </insert>
+
+    <update id="updateShopInfo" parameterType="map">
+        UPDATE
+        shop
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="mobileNumber != null">mobile_number = #{mobileNumber},</if>
+            <if test="detailAddress != null">detail_address=#{detailAddress},</if>
+            <if test="isAvailable != null">is_available = #{isAvailable},</if>
+            <if test="is_open != null">is_open=#{isOpen},</if>
+            <if test="name != null">`name`=#{name},</if>
+            <if test="code != null">code=#{code},</if>
+            <if test="head != null">head=#{head},</if>
+        </trim>
+        WHERE id=#{id}
+    </update>
+
+    <delete id="deleteShopInfo" parameterType="int">
+        delete from shop where id=#{id}
+    </delete>
+
+</mapper>
