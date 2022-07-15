@@ -15,7 +15,7 @@
         <maven.test.skip>true</maven.test.skip>
         <spring.version>4.3.2.RELEASE</spring.version>
         <!-- json -->
-        <jackson.version>2.8.1</jackson.version>
+        <jackson.version>2.12.6.1</jackson.version>
         <jackson-asl.version>1.9.13</jackson-asl.version>
 
         <gsf.version>1.3-SNAPSHOT</gsf.version>
